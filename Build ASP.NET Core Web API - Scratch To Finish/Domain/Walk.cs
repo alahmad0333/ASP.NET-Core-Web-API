@@ -10,8 +10,8 @@
         public Guid Region_Id { get; set; }
 
         //Navigation Properties
-        public Difficulty Difficulty { get; set; }
-        public Ragion Ragion_Id { get; set; }
+        public Difficulty Difficulty { get; set; } = null!;
+        public Ragion Ragion_Id { get; set; } = null!;
 
     }
 }

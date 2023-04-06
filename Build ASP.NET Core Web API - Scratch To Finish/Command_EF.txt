@@ -1,0 +1,3 @@
+[Add-Migration "Name of Magrtions" ] => to add Migration to Our Project  
+
+Update-Database => for udpaed database and convert class to tables with reatioals
