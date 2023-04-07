@@ -6,12 +6,12 @@
         public string? Description { get; set; }
         public double LengthInKm { get; set; }
         public string? Region_UmageUrl { get; set; }
-        public Guid Difficulty_ID { get; set; }
-        public Guid Region_Id { get; set; }
+        public Guid DifficultyId { get; set; }
+        public Guid RagionId { get; set; }
 
         //Navigation Properties
-        public Difficulty Difficulty { get; set; } = null!;
-        public Ragion Ragion_Id { get; set; } = null!;
+        public Difficulty Difficulty { get; set; } = null!; 
+        public Ragion Ragion { get; set; } = null!;
 
     }
 }

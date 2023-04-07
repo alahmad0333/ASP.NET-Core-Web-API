@@ -3,7 +3,6 @@ using System;
 using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -12,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Migrations
 {
     [DbContext(typeof(WalkDbContext))]
-    [Migration("20230406013428_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20230511201200_MyFirstMigration")]
+    partial class MyFirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,41 +20,59 @@ namespace Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "7.0.4")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Domain.Difficulty", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.ToTable("Difficulties");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1958455-e9c3-4735-877e-5c027507566a"),
+                            Name = "Easy"
+                        },
+                        new
+                        {
+                            Id = new Guid("77e275f6-3971-4df7-baa9-b671db84cfb0"),
+                            Name = "Medium"
+                        },
+                        new
+                        {
+                            Id = new Guid("b87727ba-4bf4-4f02-ae97-3ef980ad83c7"),
+                            Name = "Hard"
+                        });
                 });
 
             modelBuilder.Entity("Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Domain.Ragion", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Code")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("DateTime")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<string>("Region_UmageUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -66,34 +83,28 @@ namespace Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("DifficultyId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Difficulty_ID")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("char(36)");
 
                     b.Property<double>("LengthInKm")
-                        .HasColumnType("float");
+                        .HasColumnType("double");
 
-                    b.Property<Guid>("Ragion_IdId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("Region_Id")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<Guid>("RagionId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("Region_UmageUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DifficultyId");
 
-                    b.HasIndex("Ragion_IdId");
+                    b.HasIndex("RagionId");
 
                     b.ToTable("Walks");
                 });
@@ -106,15 +117,15 @@ namespace Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Domain.Ragion", "Ragion_Id")
+                    b.HasOne("Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Domain.Ragion", "Ragion")
                         .WithMany()
-                        .HasForeignKey("Ragion_IdId")
+                        .HasForeignKey("RagionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Difficulty");
 
-                    b.Navigation("Ragion_Id");
+                    b.Navigation("Ragion");
                 });
 #pragma warning restore 612, 618
         }

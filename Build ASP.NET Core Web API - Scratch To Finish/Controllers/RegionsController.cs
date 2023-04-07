@@ -1,54 +1,51 @@
-﻿using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Data;
-using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Domain;
-using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Models.DTOs;
-using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Repositories;
-using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Models.DTOs.Reagion;
+using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Domain;
+using Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Repositories.IRepositoriesReagion;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Controllers
 {
     //https://localhost:7184/api
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionsController : ControllerBase
     {
-        private readonly WalkDbContext DbContext;
         private readonly IRegionRepository regionRepository;
+        private readonly IMapper mapper;
 
-        public RegionsController(WalkDbContext dbContext, IRegionRepository regionRepository)
+        public RegionsController(IRegionRepository regionRepository, IMapper mapper)
         {
-            DbContext = dbContext;
             this.regionRepository = regionRepository;
+            this.mapper = mapper;
         }
-
-
-
 
         // GET ALL REGIONS
         // GET : https://localhost:7184/api/Regions
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] string? FilterOn, [FromQuery] string? FilterQuery,
+            [FromQuery] string? sortBy, [FromQuery] bool? isAscending
+            ,[FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 1000
+            )
         {
-            // GET DATA FORM DATABASE - DOMINE MODELS
-            var regionsDomine = await regionRepository.GetAllAsync();
+            //var RegionDto = new List<RegionDto>();
+            //foreach (var RegionDomain in IrepostryReagion)
+            //{
+            //    RegionDto.Add(new RegionDto
+            //    {
+            //        Id = RegionDomain.Id,
+            //        Name = RegionDomain.Name,
+            //        Code = RegionDomain.Code,
+            //        Region_UmageUrl = RegionDomain.Region_UmageUrl,
+            //    });
 
-            // MAP DOMAINE MODELS TO DTOS 
-            var refionsDto = new List<RegionDto>();
-            foreach (var regionDomine in regionsDomine)
-            {
-                refionsDto.Add(new RegionDto()
-                {
-                    Id = regionDomine.Id,
-                    Name = regionDomine.Name,
-                    Code = regionDomine.Code,
-                    Region_UmageUrl = regionDomine.Region_UmageUrl,
+            //}
 
-                });
-            }
-            // RETUERN DTOS
-            return Ok(refionsDto);
+            var IrepostryReagion = await regionRepository.GetAllAsync(FilterOn , FilterQuery , sortBy , isAscending?? true , pageNumber , pageSize);
+            return Ok(mapper.Map<List<RegionDto>>(IrepostryReagion));
         }
-
 
 
 
@@ -59,67 +56,64 @@ namespace Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetByID([FromRoute] Guid id)
         {
-            var regionDomine = await regionRepository.GetRagionById(id);
+            var IrepostryReagion = await regionRepository.GetRagionById(id);
 
-            if (regionDomine == null)
+            if (IrepostryReagion == null)
             {
                 return NotFound();
             }
             else
             {
-                // MAP DOMAINE MODELS TO DTOS 
+                //var RegionDomine = new RegionDto
+                //{
+                //    Id = IrepostryReagion.Id,
+                //    Name = IrepostryReagion.Name,
+                //    Code = IrepostryReagion.Code,
+                //    Region_UmageUrl = IrepostryReagion.Region_UmageUrl
+                //};
 
-                var regionDto = new RegionDto
-                {
-                    Id = regionDomine.Id,
-                    Name = regionDomine.Name,
-                    Code = regionDomine.Code,
-                    Region_UmageUrl = regionDomine.Region_UmageUrl,
-
-                };
-
-                return Ok(regionDto);
+                return Ok(mapper.Map<RegionDto>(IrepostryReagion));
             }
 
 
         }
 
 
-
-
-
-        // POST : Add New Region
+        //// POST : Add New Region
         [HttpPost]
-        public async Task<IActionResult> CreateNewReagion([FromBody] AddRegionDto ragion)
+        public async Task<IActionResult> CreateNewReagion(AddRegionDto addRegion)
         {
-            var regionDots = new Ragion
-            {
-                Name = ragion.Name,
-                Code = ragion.Code,
-                Region_UmageUrl = ragion.Region_UmageUrl,
-            };
-            var regionModel = await regionRepository.CreateNewReagion(regionDots);
-            return Ok(regionModel);
+            // DominModel to Dtos 
+            var regionDomineModel = mapper.Map<Ragion>(addRegion);
+
+            // Add Dtos to IrepostryReagion To Added To Database
+            regionDomineModel = await regionRepository.CreateNewReagion(regionDomineModel);
+
+            // then return Dto to Dmoine Model To Veiw  
+            return Ok(mapper.Map<AddRegionDto>(regionDomineModel));
+
         }
 
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> UpdateReagion([FromBody] AddRegionDto ragion, Guid id)
+        public async Task<IActionResult> UpdateReagion([FromBody] UpdateRegionDto updateRegion, [FromRoute] Guid id)
         {
-            var regionToModel = new Ragion
-            {
-                Name = ragion.Name,
-                Code = ragion.Code,
-                Region_UmageUrl = ragion.Region_UmageUrl,
-            };
-            var reagionModel = await regionRepository.Update(id, regionToModel);
-            if (reagionModel != null)
+
+            // DominModel to Dtos 
+            var regionDomineModel = mapper.Map<Ragion>(updateRegion);
+
+            regionDomineModel = await regionRepository.Update(id, regionDomineModel);
+            if (regionDomineModel == null)
             {
                 return NotFound();
             }
+            else
+            {
+                // then return Dto to Dmoine Model To Veiw  
+                return Ok(mapper.Map<RegionDto>(regionDomineModel));
+            }
 
-            return Ok(reagionModel);
         }
 
 
@@ -127,13 +121,11 @@ namespace Build_ASP.NET_Core_Web_API___Scratch_To_Finish.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> DelatetReagion([FromRoute] Guid id)
         {
+            var IrepostryReagion = await regionRepository.DelatetReagion(id);
 
-            var regionToModel = await regionRepository.DelatetReagion(id);
-            if (regionToModel == null)
-            {
-                return NotFound();
-            }
-            return Ok(regionToModel);
+            if (IrepostryReagion == null) { return NotFound(); }
+            // then return Dto to Dmoine Model To Veiw  
+            return Ok(mapper.Map<RegionDto>(IrepostryReagion));
         }
 
 
