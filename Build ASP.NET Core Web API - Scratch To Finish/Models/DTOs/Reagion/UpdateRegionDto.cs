@@ -5,7 +5,6 @@
         public string Code { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? Region_UmageUrl { get; set; }
-        public DateTime? DateTime { get; set; }
-
+        public DateTime? DateTime { get; set; } 
     }
 }
